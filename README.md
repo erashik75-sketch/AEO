@@ -23,7 +23,8 @@ Next.js 14 (App Router), TypeScript, Tailwind CSS, Prisma (PostgreSQL), NextAuth
 
 ## Setup
 
-1. Create a PostgreSQL database and set `DATABASE_URL` in `.env`.
+1. Create a PostgreSQL database and set `DATABASE_URL` (and `DIRECT_URL`) in `.env`.  
+   **Using Supabase?** Follow [docs/SUPABASE.md](./docs/SUPABASE.md) for pooled vs direct URLs and `prisma migrate deploy`.
 
 2. Copy environment variables from `.env.example`, including:
 
