@@ -7,14 +7,14 @@ export function SignalBar({
 }) {
   const v = Math.min(100, Math.max(0, value));
   return (
-    <div className="space-y-1">
-      <div className="flex justify-between text-xs text-zinc-600">
-        <span>{label}</span>
-        <span>{v}</span>
+    <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm">
+      <div className="flex justify-between text-xs font-medium text-slate-600">
+        <span className="leading-snug">{label}</span>
+        <span className="tabular-nums text-slate-900">{v}</span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-100">
+      <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
         <div
-          className="h-full rounded-full bg-zinc-900 transition-all"
+          className="h-full rounded-full bg-gradient-to-r from-brand to-brand-dark transition-all duration-500"
           style={{ width: `${v}%` }}
         />
       </div>

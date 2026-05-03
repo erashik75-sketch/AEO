@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { MessageSquare } from "lucide-react";
 
 export function ChatSection({ scanId }: { scanId: string }) {
   const [messages, setMessages] = useState<{ role: string; content: string }[]>(
@@ -48,28 +49,49 @@ export function ChatSection({ scanId }: { scanId: string }) {
   }
 
   return (
-    <div className="space-y-3">
-      <h3 className="font-semibold">Ask the AEO expert</h3>
-      <div className="max-h-64 space-y-2 overflow-y-auto rounded-lg border border-zinc-200 bg-white p-3 text-sm">
-        {messages.map((m, i) => (
-          <div key={i} className={m.role === "user" ? "text-right" : ""}>
-            <span className="inline-block rounded-lg bg-zinc-100 px-3 py-2 text-left">
-              {m.content}
-            </span>
-          </div>
-        ))}
+    <div className="space-y-5">
+      <div className="flex items-center gap-2">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-muted text-brand-dark">
+          <MessageSquare className="h-5 w-5" />
+        </span>
+        <div>
+          <h3 className="font-semibold text-slate-900">Ask the AEO expert</h3>
+          <p className="text-xs text-slate-500">Grounded in your probe context for this scan.</p>
+        </div>
       </div>
-      <div className="flex gap-2">
+      <div className="max-h-72 space-y-3 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50/80 p-4">
+        {messages.length === 0 ? (
+          <p className="text-center text-sm text-slate-500">Ask anything about this diagnostic.</p>
+        ) : (
+          messages.map((m, i) => (
+            <div
+              key={i}
+              className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+            >
+              <span
+                className={`max-w-[90%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                  m.role === "user"
+                    ? "bg-brand text-white shadow-sm"
+                    : "border border-slate-200 bg-white text-slate-800 shadow-sm"
+                }`}
+              >
+                {m.content}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+      <div className="flex gap-3">
         <input
-          className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm"
+          className="min-h-[44px] flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm shadow-sm outline-none ring-brand focus:border-transparent focus:ring-2"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="What should we fix first?"
-          onKeyDown={(e) => e.key === "Enter" && send()}
+          placeholder="What should we prioritize next?"
+          onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
         />
         <button
           type="button"
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm text-white disabled:opacity-50"
+          className="rounded-xl bg-slate-900 px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 disabled:opacity-45"
           disabled={sending}
           onClick={send}
         >
