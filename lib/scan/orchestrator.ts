@@ -5,7 +5,7 @@ import {
   buildPlanPrompt,
   buildSynthesisPrompt,
 } from "@/lib/prompts/analysis";
-import { callClaude } from "@/lib/ai/anthropic";
+import { callAnalysisLlm } from "@/lib/ai/llm-router";
 import { parseJsonObject } from "@/lib/json";
 import type { AIModel, Issue, ModelScores, SynthesisResult } from "@/types";
 import { crawlForTechnicalAudit, fetchHomepageHtml } from "@/lib/checklist/crawl";
@@ -43,7 +43,7 @@ async function analyzeModel(
 ): Promise<ModelScores> {
   const prompt = buildAnalysisPrompt(brandRef, url, category, probeContext, modelLabel);
   try {
-    const raw = await callClaude(prompt);
+    const raw = await callAnalysisLlm(prompt);
     return parseJsonObject<ModelScores>(raw);
   } catch {
     return {
@@ -174,7 +174,7 @@ export async function executeScan(scanId: string): Promise<void> {
 
   let synthesis: SynthesisResult;
   try {
-    const synRaw = await callClaude(
+    const synRaw = await callAnalysisLlm(
       buildSynthesisPrompt(brandRef, brand.category, modelScoresMap)
     );
     synthesis = parseJsonObject<SynthesisResult>(synRaw);
@@ -267,7 +267,7 @@ export async function executeScan(scanId: string): Promise<void> {
       checklistFailures,
       competitors: brand.competitors ?? "",
     });
-    const planRaw = await callClaude(planPrompt);
+    const planRaw = await callAnalysisLlm(planPrompt);
     planPayload = parseJsonObject<Record<string, unknown>>(planRaw);
   } catch {
     planPayload = {

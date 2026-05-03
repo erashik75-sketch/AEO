@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { buildPlanPrompt } from "@/lib/prompts/analysis";
-import { callClaude } from "@/lib/ai/anthropic";
+import { callAnalysisLlm } from "@/lib/ai/llm-router";
 import { parseJsonObject } from "@/lib/json";
 import type { Issue } from "@/types";
 
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
 
   let planPayload: Record<string, unknown>;
   try {
-    const raw = await callClaude(planPrompt);
+    const raw = await callAnalysisLlm(planPrompt);
     planPayload = parseJsonObject<Record<string, unknown>>(raw);
   } catch {
     return NextResponse.json({ error: "Plan generation failed" }, { status: 500 });
