@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { buildChatSystemPrompt } from "@/lib/prompts/chat";
-import { callClaude } from "@/lib/ai/anthropic";
+import { callAnalysisLlm } from "@/lib/ai/llm-router";
 
 export async function POST(
   req: Request,
@@ -49,7 +49,7 @@ export async function POST(
     .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.content}`)
     .join("\n");
 
-  const reply = await callClaude(
+  const reply = await callAnalysisLlm(
     `${system}\n\nConversation:\n${dialog}\n\nAssistant (concise, actionable):`
   );
 

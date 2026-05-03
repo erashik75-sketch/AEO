@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { buildDeepDivePrompt } from "@/lib/prompts/deepdive";
 import type { DeepDiveTab } from "@/lib/prompts/deepdive";
-import { callClaude } from "@/lib/ai/anthropic";
+import { callAnalysisLlm } from "@/lib/ai/llm-router";
 
 export async function POST(
   req: Request,
@@ -60,7 +60,7 @@ export async function POST(
     probeContext: scan.probeContext ?? "",
   });
 
-  const content = await callClaude(prompt);
+  const content = await callAnalysisLlm(prompt);
 
   await prisma.deepDive.create({
     data: {

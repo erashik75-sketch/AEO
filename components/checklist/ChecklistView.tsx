@@ -13,31 +13,47 @@ export function ChecklistView({
   }[];
 }) {
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold">AEO health checklist</h3>
-        <span className="text-2xl font-bold">{overallScore}</span>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-slate-100 pb-6">
+        <div>
+          <h3 className="text-sm font-semibold uppercase tracking-[0.15em] text-slate-500">
+            AEO health checklist
+          </h3>
+          <p className="mt-1 text-sm text-slate-600">Automated checks plus items you confirm manually.</p>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-4xl font-bold tabular-nums tracking-tight text-slate-900">
+            {overallScore}
+          </span>
+          <span className="text-sm font-medium text-slate-400">/ 100</span>
+        </div>
       </div>
-      <div className="divide-y divide-zinc-200 rounded-xl border border-zinc-200">
+      <div className="divide-y divide-slate-100 rounded-xl border border-slate-100 overflow-hidden">
         {items.map((it) => (
-          <div key={it.id} className="flex flex-col gap-1 p-3 text-sm md:flex-row md:items-center md:justify-between">
-            <div>
-              <span className="font-medium">{it.checkId}</span> — {it.name}
-              <p className="text-xs text-zinc-500">{it.detail}</p>
+          <div
+            key={it.id}
+            className="flex flex-col gap-2 bg-white px-4 py-4 sm:flex-row sm:items-start sm:justify-between"
+          >
+            <div className="min-w-0">
+              <span className="font-mono text-xs font-semibold text-brand-dark">{it.checkId}</span>
+              <p className="mt-1 font-medium text-slate-900">{it.name}</p>
+              <p className="mt-1 text-sm text-slate-600">{it.detail}</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex shrink-0 flex-wrap items-center gap-2 sm:flex-col sm:items-end">
               <span
-                className={`rounded-full px-2 py-0.5 text-xs capitalize ${
+                className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold capitalize ${
                   it.status === "pass"
-                    ? "bg-green-100 text-green-800"
+                    ? "bg-emerald-100 text-emerald-800"
                     : it.status === "fail"
-                      ? "bg-red-100 text-red-800"
+                      ? "bg-rose-100 text-rose-800"
                       : "bg-amber-100 text-amber-900"
                 }`}
               >
                 {it.status}
               </span>
-              <span className="text-xs text-zinc-500">{it.aeoImpact}</span>
+              <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                {it.aeoImpact} impact
+              </span>
             </div>
           </div>
         ))}

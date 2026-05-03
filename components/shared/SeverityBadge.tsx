@@ -5,17 +5,17 @@ export function SeverityBadge({
 }: {
   severity: string;
 }) {
-  const colors: Record<string, string> = {
-    critical: "bg-red-100 text-red-900",
-    high: "bg-orange-100 text-orange-900",
-    medium: "bg-amber-100 text-amber-900",
-    low: "bg-zinc-100 text-zinc-700",
+  const styles: Record<string, string> = {
+    critical: "bg-rose-100 text-rose-900 ring-1 ring-rose-200",
+    high: "bg-orange-100 text-orange-900 ring-1 ring-orange-200",
+    medium: "bg-amber-100 text-amber-900 ring-1 ring-amber-200",
+    low: "bg-slate-100 text-slate-700 ring-1 ring-slate-200",
   };
   return (
     <span
       className={cn(
-        "rounded-full px-2 py-0.5 text-xs font-medium capitalize",
-        colors[severity] ?? colors.low
+        "rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
+        styles[severity] ?? styles.low
       )}
     >
       {severity}

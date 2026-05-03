@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "AEO Platform",
@@ -13,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-zinc-50 antialiased text-zinc-900">
+    <html lang="en" className={inter.variable}>
+      <body className={`${inter.className} min-h-screen`}>
         <Providers>{children}</Providers>
       </body>
     </html>

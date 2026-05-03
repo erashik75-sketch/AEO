@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { callClaude } from "@/lib/ai/anthropic";
+import { callAgentLlm } from "@/lib/ai/llm-router";
 import {
   buildCanonicalDefinitionPrompt,
   buildConsistencyAuditPrompt,
@@ -72,7 +72,7 @@ export async function runAgent(params: {
         coreOutcome: "measurable outcome",
         probeContext,
       });
-      content = await callClaude(prompt);
+      content = await callAgentLlm(prompt);
       break;
     }
     case "semantic_keyword": {
@@ -84,7 +84,7 @@ export async function runAgent(params: {
         probeContext,
         websiteCopy,
       });
-      content = await callClaude(prompt);
+      content = await callAgentLlm(prompt);
       break;
     }
     case "brand_consistency": {
@@ -96,7 +96,7 @@ export async function runAgent(params: {
           website: probeContext.slice(0, 4000),
         },
       });
-      content = await callClaude(prompt);
+      content = await callAgentLlm(prompt);
       break;
     }
     case "community_post": {
@@ -116,7 +116,8 @@ export async function runAgent(params: {
         semanticKeywords: [brand.category],
         founderVoice: "direct",
       });
-      content = (await callClaude(prompt)) + "\n\n---\n\n" + (await callClaude(ih));
+      content =
+        (await callAgentLlm(prompt)) + "\n\n---\n\n" + (await callAgentLlm(ih));
       break;
     }
     case "review_outreach": {
@@ -126,7 +127,7 @@ export async function runAgent(params: {
         targetPersona: "marketing manager",
         semanticKeywords: [brand.category],
       });
-      content = await callClaude(
+      content = await callAgentLlm(
         `${ex}\n\nAlso draft a 3-email sequence outline for G2 outreach with subjects and bodies. Brand: ${brandName}`
       );
       break;
@@ -139,7 +140,7 @@ export async function runAgent(params: {
         crawlResults: crawl as unknown as Record<string, unknown>,
         probeContext,
       });
-      content = await callClaude(prompt);
+      content = await callAgentLlm(prompt);
       break;
     }
     default:
