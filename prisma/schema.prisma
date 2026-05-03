@@ -1,0 +1,225 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Plan {
+  FREE
+  PRO
+  AGENCY
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  emailVerified    DateTime?
+  name             String?
+  image            String?
+  plan             Plan      @default(FREE)
+  stripeCustomerId String?   @unique
+  scansThisMonth   Int       @default(0)
+  scansResetAt     DateTime  @default(now())
+  accounts         Account[]
+  sessions         Session[]
+  brands           Brand[]
+  createdAt        DateTime  @default(now())
+}
+
+model Brand {
+  id          String            @id @default(cuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  url         String
+  name        String?
+  category    String
+  competitors String?
+  description String?
+  useCases    String?
+  scans       Scan[]
+  plans       AEOPlan[]
+  campaigns   ReviewCampaign[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([userId])
+}
+
+model Scan {
+  id               String        @id @default(cuid())
+  brandId          String
+  brand            Brand         @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  status           ScanStatus    @default(RUNNING)
+  claudeProbes     Json?
+  openaiProbes     Json?
+  perplexityProbes Json?
+  geminiProbes     Json?
+  claudeScores     Json?
+  openaiScores     Json?
+  perplexityScores Json?
+  geminiScores     Json?
+  modelFailures    Json?
+  crossModelScore  Int?
+  probeContext     String?       @db.Text
+  summary          String?
+  issues           Json?
+  deepDives        DeepDive[]
+  agentOutputs     AgentOutput[]
+  chatMessages     ChatMessage[]
+  checklistRun     ChecklistRun?
+  createdAt        DateTime      @default(now())
+
+  @@index([brandId])
+}
+
+enum ScanStatus {
+  RUNNING
+  COMPLETE
+  FAILED
+}
+
+model DeepDive {
+  id        String   @id @default(cuid())
+  scanId    String
+  scan      Scan     @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  issueId   String
+  tab       String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@unique([scanId, issueId, tab])
+}
+
+model AgentOutput {
+  id           String    @id @default(cuid())
+  scanId       String
+  scan         Scan      @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  agentId      String
+  issueId      String    @default("")
+  content      String    @db.Text
+  status       String    @default("generated")
+  publishedAt  DateTime?
+  publishedUrl String?
+  createdAt    DateTime  @default(now())
+
+  @@unique([scanId, agentId, issueId])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  scanId    String
+  scan      Scan      @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  role      String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+}
+
+model ChecklistRun {
+  id             String          @id @default(cuid())
+  scanId         String          @unique
+  scan           Scan            @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  brandId        String
+  overallScore   Int
+  categoryScores Json
+  items          ChecklistItem[]
+  createdAt      DateTime        @default(now())
+}
+
+model ChecklistItem {
+  id              String       @id @default(cuid())
+  checklistRunId  String
+  checklistRun    ChecklistRun @relation(fields: [checklistRunId], references: [id], onDelete: Cascade)
+  checkId         String
+  category        String
+  name            String
+  status          String
+  aeoImpact       String
+  fixAgentId      String?
+  detail          String
+  confirmedByUser Boolean      @default(false)
+}
+
+model AEOPlan {
+  id        String     @id @default(cuid())
+  brandId   String
+  brand     Brand      @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  scanId    String
+  summary   Json
+  tasks     PlanTask[]
+  createdAt DateTime   @default(now())
+}
+
+model PlanTask {
+  id             String    @id @default(cuid())
+  planId         String
+  plan           AEOPlan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  title          String
+  owner          String
+  agentId        String?
+  signalImproved String
+  phase          Int
+  type           String
+  status         String    @default("pending")
+  completedAt    DateTime?
+}
+
+model ReviewCampaign {
+  id        String          @id @default(cuid())
+  brandId   String
+  brand     Brand           @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  platform  String
+  status    String          @default("active")
+  contacts  ReviewContact[]
+  createdAt DateTime        @default(now())
+}
+
+model ReviewContact {
+  id           String         @id @default(cuid())
+  campaignId   String
+  campaign     ReviewCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  email        String
+  name         String?
+  tier         Int
+  email1SentAt DateTime?
+  email2SentAt DateTime?
+  email3SentAt DateTime?
+  reviewLeftAt DateTime?
+  reviewUrl    String?
+}
