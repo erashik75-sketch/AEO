@@ -1,8 +1,10 @@
-import { LoginForm } from "./login-form";
+import { EmailAuthForm } from "@/components/email-auth-form";
 
 export default function LoginPage() {
-  const googleEnabled =
-    !!process.env.AUTH_GOOGLE_ID && !!process.env.AUTH_GOOGLE_SECRET;
+  const magicLinkEnabled =
+    !!process.env.EMAIL_SERVER_HOST &&
+    !!process.env.EMAIL_FROM &&
+    !!process.env.AUTH_SECRET;
 
   return (
     <div className="mesh-bg flex min-h-screen flex-col items-center justify-center px-6 py-16">
@@ -11,12 +13,15 @@ export default function LoginPage() {
           <span className="text-xl font-bold">A</span>
         </div>
         <h1 className="mt-6 text-center text-2xl font-semibold tracking-tight text-slate-900">
-          Welcome back
+          Sign in
         </h1>
         <p className="mt-2 text-center text-sm text-slate-600">
-          Sign in to run diagnostics and manage your brands.
+          Passwordless — we email you a one-time link. Same flow for new accounts.
         </p>
-        <LoginForm googleEnabled={googleEnabled} />
+        <EmailAuthForm
+          magicLinkEnabled={magicLinkEnabled}
+          alternateLink={{ href: "/signup", label: "Prefer a dedicated sign-up page?" }}
+        />
       </div>
     </div>
   );
