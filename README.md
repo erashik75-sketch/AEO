@@ -29,12 +29,11 @@ Next.js 14 (App Router), TypeScript, Tailwind CSS, Prisma (PostgreSQL), NextAuth
 
 2. Copy environment variables from `.env.example`, including:
 
-   - `DATABASE_URL`
-   - `AUTH_SECRET` (e.g. `openssl rand -base64 32`)
+   - `DATABASE_URL`, `DIRECT_URL`
+   - `AUTH_SECRET` and **`AUTH_URL`** (your site origin, e.g. `https://….vercel.app`) for magic links
+   - **SMTP** for passwordless email: `EMAIL_SERVER_HOST`, `EMAIL_FROM`, and `EMAIL_SERVER_USER` / `EMAIL_SERVER_PASSWORD` if required by your provider
    - At least one LLM key path: e.g. **`ANTHROPIC_API_KEY`** for Claude-only, or **`DEEPSEEK_API_KEY`** / **`MOONSHOT_API_KEY`** with **`AGENT_LLM_PROVIDER`** set to `deepseek` or `kimi`
    - Optional: `OPENAI_API_KEY`, `PERPLEXITY_API_KEY`, `GEMINI_API_KEY` for full multi-model probes on paid tiers
-   - Optional: `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` for Google sign-in
-   - Optional: SMTP / Resend for magic link email provider
 
 3. Apply the schema:
 
@@ -42,7 +41,7 @@ Next.js 14 (App Router), TypeScript, Tailwind CSS, Prisma (PostgreSQL), NextAuth
 npx prisma migrate dev --name init
 ```
 
-4. **Development sign-in:** With `NODE_ENV=development`, the login page includes a **Dev email** provider that upserts a user by email (no password). Use `npm run dev` and sign in with any valid email.
+4. **Sign-in:** Passwordless **magic link** via email when SMTP env vars are set. In development only, you can use **Dev email** (instant sign-in) if SMTP is not configured.
 
 5. Run the app:
 

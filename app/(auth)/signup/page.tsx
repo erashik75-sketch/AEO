@@ -1,20 +1,26 @@
-import Link from "next/link";
+import { EmailAuthForm } from "@/components/email-auth-form";
 
 export default function SignupPage() {
+  const magicLinkEnabled =
+    !!process.env.EMAIL_SERVER_HOST &&
+    !!process.env.EMAIL_FROM &&
+    !!process.env.AUTH_SECRET;
+
   return (
     <div className="mesh-bg flex min-h-screen flex-col items-center justify-center px-6 py-16">
       <div className="glass-panel w-full max-w-md rounded-3xl p-8 text-center shadow-card sm:p-10">
-        <h1 className="text-2xl font-semibold text-slate-900">Create your workspace</h1>
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand text-white shadow-md">
+          <span className="text-xl font-bold">A</span>
+        </div>
+        <h1 className="mt-6 text-2xl font-semibold tracking-tight text-slate-900">Sign up</h1>
         <p className="mt-3 text-sm leading-relaxed text-slate-600">
-          Accounts are created automatically on first sign-in—no separate signup API.
-          Use Google or dev email (in development) from the sign-in page.
+          No password. Enter your email and we send a link — your account is created the first time
+          you complete sign-in.
         </p>
-        <Link
-          href="/login"
-          className="mt-8 inline-flex w-full items-center justify-center rounded-2xl bg-brand py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-brand-dark"
-        >
-          Go to sign in
-        </Link>
+        <EmailAuthForm
+          magicLinkEnabled={magicLinkEnabled}
+          alternateLink={{ href: "/login", label: "Already have an account? Sign in" }}
+        />
       </div>
     </div>
   );

@@ -25,8 +25,9 @@ See `.env.example`. For production:
 | `DATABASE_URL` | Pooled Supabase URL (or direct) — app + build |
 | `DIRECT_URL` | Direct Postgres (port 5432) — migrations from your machine |
 | `AUTH_SECRET` | NextAuth |
-| `AUTH_URL` | `https://your-project.vercel.app` (or custom domain) |
-| AI / OAuth | As needed |
+| `AUTH_URL` | `https://your-project.vercel.app` (or custom domain) — required for magic links |
+| `EMAIL_SERVER_HOST`, `EMAIL_FROM`, SMTP user/pass if required | Passwordless email sign-in |
+| AI keys | As needed |
 
 ## After first deploy
 

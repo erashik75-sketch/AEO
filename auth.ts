@@ -1,31 +1,18 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
 import Nodemailer from "next-auth/providers/nodemailer";
 import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import type { Plan } from "@prisma/client";
 
-const googleConfigured =
-  !!process.env.AUTH_GOOGLE_ID && !!process.env.AUTH_GOOGLE_SECRET;
-
-const emailConfigured =
+const magicLinkConfigured =
   !!process.env.EMAIL_SERVER_HOST &&
   !!process.env.EMAIL_FROM &&
   !!process.env.AUTH_SECRET;
 
 const providers = [];
 
-if (googleConfigured) {
-  providers.push(
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID!,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
-    })
-  );
-}
-
-if (emailConfigured) {
+if (magicLinkConfigured) {
   providers.push(
     Nodemailer({
       server: {
@@ -41,6 +28,7 @@ if (emailConfigured) {
   );
 }
 
+/** Local-only instant sign-in when SMTP is not configured. */
 if (process.env.NODE_ENV === "development") {
   providers.push(
     Credentials({
@@ -63,12 +51,11 @@ if (process.env.NODE_ENV === "development") {
   );
 }
 
-/** Bootstrap provider so NextAuth initializes when OAuth/email env is missing (authorize returns null). */
 if (providers.length === 0) {
   providers.push(
     Credentials({
       id: "disabled",
-      name: "Configure AUTH",
+      name: "Configure email auth",
       credentials: {},
       async authorize() {
         return null;
@@ -82,7 +69,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "database" },
   trustHost: true,
   providers,
-  pages: { signIn: "/login" },
+  pages: {
+    signIn: "/login",
+    verifyRequest: "/login/verify",
+  },
   callbacks: {
     async session({ session, user }) {
       if (session.user) {
