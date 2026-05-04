@@ -39,3 +39,9 @@ npx prisma migrate deploy
 ## Redeploy checklist
 
 If builds use an old commit, confirm **Deployments** shows latest **`main`** SHA. Use **Redeploy** without stale branch pinning.
+
+## ENOENT `page_client-reference-manifest.js` (duplicate `/`)
+
+If Vercel fails copying a path like `.next/server/app/(dashboard)/page_client-reference-manifest.js`, a common cause is **two `page.tsx` files both defining `/`**: `app/page.tsx` and `app/(dashboard)/page.tsx`, because **`(dashboard)` is a route group** — it does not add a URL segment, so both compete for `/`.
+
+**Fix on `main`:** marketing only at **`/`** (`app/page.tsx`); app overview at **`/dashboard`** (`app/(dashboard)/dashboard/page.tsx`). **`next.config.mjs`** rewrites `/dashboard/brands/*` → `/brands/*`, `/dashboard/billing` → `/billing`, and `/dashboard/settings` → `/settings` so existing `/dashboard/...` links keep working.
